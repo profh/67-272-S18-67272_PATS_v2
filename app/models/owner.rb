@@ -8,6 +8,7 @@ class Owner < ApplicationRecord
   has_many :pets # :dependent => :destroy  (:nullify option will break link, but leaves orphan records)
   has_many :visits, through: :pets
   # has_many :notes, as: :notable
+  belongs_to :user
   
   
   # Scopes

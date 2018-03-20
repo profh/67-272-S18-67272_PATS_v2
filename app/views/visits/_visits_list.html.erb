@@ -13,12 +13,16 @@
       <td><%= link_to visit.pet.name, pet_path(visit.pet) %> (<%= visit.pet.animal.name %>)</td>
       <td><%= visit.weight %> lbs</td>
       <td class="align_center">
-      <%= link_to edit_visit_path(visit) do %>
-            <i class="material-icons">edit</i>
+      <% if can? :edit, visit %>
+        <%= link_to edit_visit_path(visit) do %>
+              <i class="material-icons">edit</i>
+          <% end %>
+          &nbsp;&nbsp;&nbsp;&nbsp; 
         <% end %>
-        &nbsp;&nbsp;&nbsp;&nbsp; 
-        <%= link_to(visit_path(visit), method: :delete, data: { confirm: 'Are you sure you wish to delete this information?' }) do %>
-            <i class="material-icons">delete</i>
+        <% if can? :destroy, visit %>
+          <%= link_to(visit_path(visit), method: :delete, data: { confirm: 'Are you sure you wish to delete this information?' }) do %>
+              <i class="material-icons">delete</i>
+          <% end %>
         <% end %>
       </td>
     </tr>

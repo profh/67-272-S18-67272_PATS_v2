@@ -3,11 +3,18 @@ class PetsController < ApplicationController
   # A callback to set up an @pet object to work with 
   before_action :set_pet, only: [:show, :edit, :update, :destroy]
   before_action :check_login
+  authorize_resource
 
   def index
     # get data on all pets and paginate the output to 10 per page
-    @active_pets = Pet.active.alphabetical.paginate(page: params[:page]).per_page(10)
-    @inactive_pets = Pet.inactive.alphabetical.to_a
+    if current_user.role?(:owner)
+      @active_pets = current_user.owner.pets.active.alphabetical.paginate(page: params[:page]).per_page(10)
+      @inactive_pets = current_user.owner.pets.inactive.alphabetical.to_a
+    else
+      @active_pets = Pet.active.alphabetical.paginate(page: params[:page]).per_page(10)
+      @inactive_pets = Pet.inactive.alphabetical.to_a
+    end
+
   end
 
   def show

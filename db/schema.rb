@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180102204046) do
+ActiveRecord::Schema.define(version: 20180320013952) do
 
   create_table "animal_medicines", force: :cascade do |t|
     t.integer "animal_id"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 20180102204046) do
     t.string "phone"
     t.string "email"
     t.boolean "active", default: true
+    t.integer "user_id"
   end
 
   create_table "pets", force: :cascade do |t|

@@ -4,8 +4,12 @@
       <li><%= link_to 'Owners', owners_path %></li>
       <li><%= link_to 'Pets', pets_path %></li>
       <li><%= link_to 'Visits', visits_path %></li>
-      <li><%= link_to 'Medicines', medicines_path %></li>
-      <li><%= link_to 'Procedures', procedures_path %></li>
+      <% if can? :read, Medicine %>
+        <li><%= link_to 'Medicines', medicines_path %></li>
+      <% end %>
+      <% if can? :read, Procedure %>
+        <li><%= link_to 'Procedures', procedures_path %></li>
+      <% end %>
     </ul>
     <ul class="right">
       <li><%= link_to 'Logout', logout_path %></li>

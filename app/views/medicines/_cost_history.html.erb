@@ -15,14 +15,18 @@
         <% end %>
     </table>
     </div>
-    <div class="card-action">
-      <%= link_to "Add a new cost", new_medicine_cost_path(medicine_id: @medicine.id) %>
-    </div>
+    <% if can? :new, MedicineCost %>
+      <div class="card-action">
+        <%= link_to "Add a new cost", new_medicine_cost_path(medicine_id: @medicine.id) %>
+      </div>
+    <% end %>
   </div>
 <% else %>
-  <div class="card grey lighten-3">
-    <div class="card-action">
-      <%= link_to "Add a new cost", new_medicine_cost_path(medicine_id: @medicine.id) %>
+  <% if can? :new, MedicineCost %>
+    <div class="card grey lighten-3">
+      <div class="card-action">
+        <%= link_to "Add a new cost", new_medicine_cost_path(medicine_id: @medicine.id) %>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

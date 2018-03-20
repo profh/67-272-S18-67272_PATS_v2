@@ -5,23 +5,29 @@
       <ul>
         <% for dosage in @dosages %>
           <li>
-            <%= link_to(dosage_path(dosage), method: :delete, class: 'remove') do %>
+            <% if can? :destroy, Dosage %>
+              <%= link_to(dosage_path(dosage), method: :delete, class: 'remove') do %>
                 x&nbsp;&nbsp;
               <% end %>
+            <% end %>
             <%= link_to dosage.medicine.name, medicine_path(dosage.medicine) %>:&nbsp;&nbsp;
             <%= dosage.units_given %> <%= dosage.medicine.unit %>
           </li>
         <% end %>
       </ul>
     </div>
-    <div class="card-action">
-      <%= link_to "Add a new dosage", new_dosage_path(visit_id: @visit.id) %>
-    </div>
+    <% if can? :new, Dosage %>
+      <div class="card-action">
+        <%= link_to "Add a new dosage", new_dosage_path(visit_id: @visit.id) %>
+      </div>
+    <% end %>
   </div>
 <% else %>
-  <div class="card grey lighten-3">
-    <div class="card-action">
-      <%= link_to "Add a new dosage", new_dosage_path(visit_id: @visit.id) %>
+  <% if can? :new, Dosage %>
+    <div class="card grey lighten-3">
+      <div class="card-action">
+        <%= link_to "Add a new dosage", new_dosage_path(visit_id: @visit.id) %>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

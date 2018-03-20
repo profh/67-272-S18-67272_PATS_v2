@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PATS :: Version 1</title>
+    <title>PATS :: Version 2</title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
@@ -13,8 +13,10 @@
   <body>
     <!-- Partials for the topbar and navigation -->
     <%= render :partial => "partials/topbar" %>
-    <% if logged_in? %>
+    <% if logged_in? && ( current_user.role?(:vet) || current_user.role?(:assistant) ) %>
       <%= render :partial => "partials/nav" %>
+    <% elsif logged_in? && current_user.role?(:owner) %>
+      <%= render :partial => "partials/nav_owner" %>
     <% else %>
       <%= render :partial => "partials/nav_guest" %>
     <% end %>
