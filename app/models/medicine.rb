@@ -35,10 +35,13 @@ class Medicine < ApplicationRecord
   # Callbacks
   before_destroy do 
    check_if_ever_given_as_dosage
-   @destroyable = false if errors.present?
-   throw(:abort) if errors.present?
-   remove_associated_animal_medicines
-   remove_associated_medicine_costs
+   if errors.present?
+     @destroyable = false
+     throw(:abort)
+   else
+     remove_associated_animal_medicines
+     remove_associated_medicine_costs
+   end
   end
 
   after_rollback :convert_to_inactive

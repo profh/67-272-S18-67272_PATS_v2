@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  include AppHelpers::Deletions
   include AppHelpers::Activeable::InstanceMethods
   extend AppHelpers::Activeable::ClassMethods
 
@@ -43,13 +42,4 @@ class User < ApplicationRecord
     find_by_username(username).try(:authenticate, password)
   end
 
-  # don't allow any users to be destroyed
-  before_destroy do 
-    cannot_destroy_object()
-  end
-
-  # convert destroy call to make inactive
-  after_rollback do
-    self.make_inactive
-  end
 end

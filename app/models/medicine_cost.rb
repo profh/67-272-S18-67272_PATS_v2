@@ -18,7 +18,7 @@ class MedicineCost < ApplicationRecord
   before_create :set_end_date_of_old_cost
 
   before_destroy do 
-    cannot_destroy_object()
+    cannot_destroy_object() unless self.medicine.dosages.empty?
   end
 
   private

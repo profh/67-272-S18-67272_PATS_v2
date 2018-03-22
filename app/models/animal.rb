@@ -15,7 +15,7 @@ class Animal < ApplicationRecord
   # Validations
   validates_presence_of :name
 
-  before_destroy do 
-    cannot_destroy_object()
-  end
+  # Callback - to prevent deletions
+  before_destroy :cannot_destroy_object
+
 end

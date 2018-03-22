@@ -90,6 +90,7 @@ class Owner < ApplicationRecord
      end
 
      def deactive_owner_user_and_pets
+       return true unless self.destroyable == false
        self.pets.each{ |pet| pet.make_inactive }
        self.user.make_inactive
        self.make_inactive

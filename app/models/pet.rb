@@ -72,7 +72,7 @@ class Pet < ApplicationRecord
   #   # problem is no error msg given to user
   # end
 
-  after_rollback :make_pet_inactive
+  after_rollback :make_pet_inactive  #, on: :destroy
   
   # Use private methods to execute the custom validations
   # -----------------------------
@@ -86,6 +86,7 @@ class Pet < ApplicationRecord
   end
 
   def make_pet_inactive
+    return true unless self.destroyable == false
     self.make_inactive
     msg = "This #{self.class.to_s.downcase} cannot be deleted but was made inactive instead."
     errors.add(:base, msg)

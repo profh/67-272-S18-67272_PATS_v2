@@ -10,7 +10,8 @@ module AppHelpers
       msg = "This #{self.class.to_s.downcase} cannot be deleted at this time. If this is a mistake, please alert the administrator."
       errors.add(:base, msg)
       throw(:abort) if errors.present?
-      # if respond_to? :active, why not make_inactive as well? (hint: transactions)
+      # self.make_inactive if self.respond_to?(:active)
+      # if respond_to? :active, why not make_inactive as well?                      (hint: transactions)
     end
   end
 end

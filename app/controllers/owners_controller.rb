@@ -26,18 +26,17 @@ class OwnersController < ApplicationController
     @owner = Owner.new(owner_params)
     @user = User.new(user_params)
     @user.role = "owner"
-    if @user.save
+    if !@user.save
+      @owner.valid?
+      render action: 'new'
+    else
       @owner.user_id = @user.id
       if @owner.save
-        # if saved to database
         flash[:notice] = "Successfully created #{@owner.proper_name}."
-        redirect_to owner_path(@owner) # go to show owner page
+        redirect_to owner_path(@owner) 
       else
-        # return to the 'new' form
         render action: 'new'
-      end
-    else
-      render action: 'new'
+      end      
     end
   end
 
