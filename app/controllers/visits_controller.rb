@@ -14,12 +14,7 @@ class VisitsController < ApplicationController
   end
   
   def show
-    @pet = @visit.pet
-    @owner = @visit.pet.owner
-    # get all the dosages & treatments associated with this visit, if any
-    # note the difference in the sorting (treatments > dosages in terms of clarity)
-    @dosages = @visit.dosages.to_a.sort_by{|d| d.medicine.name}
-    @treatments = @visit.treatments.alphabetical
+    get_related_data()
   end
   
   def new
@@ -49,9 +44,13 @@ class VisitsController < ApplicationController
   end
   
   def destroy
-    @visit.destroy
-    flash[:notice] = "Successfully removed the visit of #{@visit.pet.name} on #{@visit.date.strftime('%b %e')}."
-    redirect_to visits_url
+    if @visit.destroy
+      flash[:notice] = "Successfully removed the visit of #{@visit.pet.name} on #{@visit.date.strftime('%b %e')}."
+      redirect_to visits_url
+    else
+      get_related_data()
+      render action: 'show'
+    end
   end
 
     private
@@ -62,5 +61,13 @@ class VisitsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def visit_params
       params.require(:visit).permit(:pet_id, :date, :weight)
+    end
+    def get_related_data
+      @pet = @visit.pet
+      @owner = @visit.pet.owner
+      # get all the dosages & treatments associated with this visit, if any
+      # note the difference in the sorting (treatments > dosages in terms of clarity)
+      @dosages = @visit.dosages.to_a.sort_by{|d| d.medicine.name}
+      @treatments = @visit.treatments.alphabetical
     end
 end

@@ -1,88 +1,82 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
-  def new_user(attributes = {})
-    attributes[:first_name] ||= 'Ed'
-    attributes[:last_name] ||= 'Gruberman'
-    attributes[:role] ||= 'assistant'
-    attributes[:username] ||= 'foo'
-    attributes[:password] ||= 'secret'
-    attributes[:password_confirmation] ||= attributes[:password]
-    user = User.new(attributes)
-    user.valid? # run validations
-    user
-  end
+  should have_secure_password
 
-  def setup
-    User.delete_all
-  end
+  # test validations
+  should validate_presence_of(:username)
+  should validate_uniqueness_of(:username).case_insensitive
 
-  def test_valid
-    assert new_user.valid?
-  end
+  should allow_value("vet").for(:role)
+  should allow_value("assistant").for(:role)
+  should allow_value("owner").for(:role)
+  should_not allow_value("bad").for(:role)
+  should_not allow_value("hacker").for(:role)
+  should_not allow_value(10).for(:role)
+  should_not allow_value("leader").for(:role)
+  should_not allow_value(nil).for(:role)
+  
+  
+  # context
+  context "Within context" do
+    setup do
+      create_vet_users
+    end
+    
+    teardown do
+      destroy_vet_users
+    end
 
-  def test_require_first_name
-    assert_equal ["can't be blank"], new_user(first_name: '').errors[:first_name]
-  end
+    should "require users to have unique, case-insensitive usernames" do
+      # already test on line 8, but doing it long way here
+      assert_equal "jordan", @jordan.username
+      # try to switch to Becca's username 'becca'
+      @jordan.username = "BECCA"
+      deny @jordan.valid?, "#{@jordan.username}"
+    end
 
-  def test_require_last_name
-    assert_equal ["can't be blank"], new_user(last_name: '').errors[:last_name]
-  end
+    should "have role methods and recognize all three roles" do
+      egruberman = FactoryBot.build(:user)
+      alex_user = FactoryBot.build(:user, first_name: "Alex", last_name: "Heimann", username: "alex", role: "owner")
+      assert egruberman.role?(:assistant)
+      deny egruberman.role?(:vet)
+      assert alex_user.role?(:owner)
+      deny alex_user.role?(:assistant)
+      assert @becca.role?(:vet)
+      deny @becca.role?(:assistant)
+    end
 
-  def test_require_username
-    assert_equal ["can't be blank"], new_user(username: '').errors[:username]
-  end
+    should "have name methods for users" do
+      assert_equal "Jordan Stapinski", @jordan.proper_name
+      assert_equal "Kern, Becca", @becca.name
+    end
 
-  def test_require_password
-    assert_equal ["can't be blank"], new_user(password: '').errors[:password]
-  end
+    should "allow user to authenticate with password" do
+      assert @jordan.authenticate("secret")
+      deny @jordan.authenticate("notsecret")
+    end
 
-  def test_name_is_set
-    assert_equal "Gruberman, Ed", new_user().name
-  end
+    should "require a password for new users" do
+      bad_user = FactoryBot.build(:user, username: "tank", password: nil)
+      deny bad_user.valid?
+    end
+    
+    should "require passwords to be confirmed and matching" do
+      bad_user_1 = FactoryBot.build(:user, username: "tank", password: "secret", password_confirmation: nil)
+      deny bad_user_1.valid?
+      bad_user_2 = FactoryBot.build(:user, username: "tank", password: "secret", password_confirmation: "sauce")
+      deny bad_user_2.valid?
+    end
+    
+    should "require passwords to be at least four characters" do
+      bad_user = FactoryBot.build(:user, username: "tank", password: "no")
+      deny bad_user.valid?
+    end
 
-  def test_proper_name_is_set
-    assert_equal "Ed Gruberman", new_user().proper_name
-  end
+    should "have class method to handle authentication services" do
+      assert User.authenticate('jordan', 'secret')
+      deny User.authenticate('jordan', 'notsecret')
+    end
 
-  def test_validate_uniqueness_of_username
-    new_user(username: 'uniquename').save!
-    assert_equal ["has already been taken"], new_user(username: 'uniquename').errors[:username]
-  end
-
-  def test_validate_role_types
-    assert new_user(role: 'vet').valid?
-    assert new_user(role: 'assistant').valid?
-    deny new_user(role: 'nurse').valid?
-  end
-
-  def test_role_boolean_method
-    assert new_user().role?(:assistant)
-    deny new_user().role?(:vet)
-  end
-
-  def test_validate_password_length
-    deny new_user(password: 'bad').valid?
-  end
-
-  def test_require_matching_password_confirmation
-    deny new_user(password_confirmation: 'nonmatching').valid?
-  end
-
-  def test_authenticate_by_username
-    User.delete_all
-    user = new_user(username: 'foobar', password: 'secret')
-    user.save!
-    assert_equal user, User.authenticate('foobar', 'secret')
-  end
-
-  def test_authenticate_bad_username
-    assert_nil User.authenticate('nonexisting', 'secret')
-  end
-
-  def test_authenticate_bad_password
-    User.delete_all
-    new_user(username: 'foobar', password: 'secret').save!
-    deny User.authenticate('foobar', 'badpassword')
   end
 end

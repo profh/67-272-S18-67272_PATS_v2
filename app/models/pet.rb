@@ -1,5 +1,6 @@
 class Pet < ApplicationRecord
   include AppHelpers::Validations
+  include AppHelpers::Deletions
   include AppHelpers::Activeable::InstanceMethods
   extend AppHelpers::Activeable::ClassMethods
 
@@ -59,16 +60,19 @@ class Pet < ApplicationRecord
   # -----------------------------
   # a method to get owner name in last, first format
   def gender
-    return "Female" if self.female
-    "Male"
-    # self.female ? "Female" : "Male"
-    # if self.female 
-    #   return "Female"
-    # else
-    #   return "Male"
-    # end
+    self.female ? "Female" : "Male"
   end  
+
+  before_destroy do 
+    cannot_destroy_object()
+  end
   
+  # after_rollback do
+  #   self.make_inactive
+  #   # problem is no error msg given to user
+  # end
+
+  after_rollback :make_pet_inactive
   
   # Use private methods to execute the custom validations
   # -----------------------------
@@ -79,5 +83,11 @@ class Pet < ApplicationRecord
   
   def owner_is_active_in_PATS_system
     is_active_in_system(:owner)
+  end
+
+  def make_pet_inactive
+    self.make_inactive
+    msg = "This #{self.class.to_s.downcase} cannot be deleted but was made inactive instead."
+    errors.add(:base, msg)
   end
 end

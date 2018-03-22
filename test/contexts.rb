@@ -29,17 +29,29 @@ module Contexts
   
   def create_all
     create_vet_users
+    puts "Built vet users"
     create_animals
+    puts "Built animals"
     create_medicines
+    puts "Built medicines"
     create_medicine_costs
+    puts "Built medicine costs"
     create_animal_medicines
+    puts "Built animal medicines"
     create_procedures
+    puts "Built procedures"
     create_procedure_costs
+    puts "Built procedure costs"
     create_owners
+    puts "Built owners and owner users"
     create_pets
+    puts "Built pets"
     create_visits
+    puts "Built visits"
     create_dosages
+    puts "Built dosages"
     create_treatments
+    puts "Built treatments"
   end
   
 end

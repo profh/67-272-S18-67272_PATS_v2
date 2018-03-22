@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  include AppHelpers::Deletions
+  include AppHelpers::Activeable::InstanceMethods
+  extend AppHelpers::Activeable::ClassMethods
+
   # Use built-in rails support for password protection
   has_secure_password
     
@@ -8,8 +12,8 @@ class User < ApplicationRecord
 
   # Validations
   # make sure required fields are present
-  validates_presence_of :first_name, :last_name, :username 
-  validates_uniqueness_of :username
+  validates_presence_of :first_name, :last_name 
+  validates :username, presence: true, uniqueness: { case_sensitive: false}
   validates_presence_of :password, :on => :create 
   validates_presence_of :password_confirmation, :on => :create 
   validates_confirmation_of :password, message: "does not match"
@@ -33,10 +37,19 @@ class User < ApplicationRecord
     return false if role.nil?
     role.downcase.to_sym == authorized_role
   end
-
   
   # login by username
   def self.authenticate(username, password)
     find_by_username(username).try(:authenticate, password)
+  end
+
+  # don't allow any users to be destroyed
+  before_destroy do 
+    cannot_destroy_object()
+  end
+
+  # convert destroy call to make inactive
+  after_rollback do
+    self.make_inactive
   end
 end

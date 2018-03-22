@@ -51,8 +51,8 @@ group :development, :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '2.17.0'
   gem 'selenium-webdriver', '3.8.0'
-  # gem 'better_errors'
-  # gem 'binding_of_caller'
+  gem 'better_errors'
+  gem 'binding_of_caller'
   gem 'meta_request', '0.5.0'
   gem 'hirb', '0.7.3'
   gem 'faker', '1.8.7'

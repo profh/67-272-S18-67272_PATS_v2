@@ -1,4 +1,5 @@
 class Animal < ApplicationRecord
+  include AppHelpers::Deletions
   extend AppHelpers::Activeable::ClassMethods
 
   # Relationships
@@ -13,4 +14,8 @@ class Animal < ApplicationRecord
    
   # Validations
   validates_presence_of :name
+
+  before_destroy do 
+    cannot_destroy_object()
+  end
 end

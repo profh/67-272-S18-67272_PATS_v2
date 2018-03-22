@@ -23,5 +23,17 @@ module Contexts
       @tgruberman.delete
     end
 
+    def create_owner_users
+      @alex_user = FactoryBot.create(:user, first_name: "Alex", last_name: "Heimann", username: "alex", role: "owner")
+      @rachel_user = FactoryBot.create(:user, first_name: "Rachel", last_name: "Heimann", username: "rachel", role: "owner")
+      @mark_user = FactoryBot.create(:user, first_name: "Mark", last_name: "Heimann", username: "mark", role: "owner")      
+    end
+
+    def destroy_owner_users
+      @alex_user.delete 
+      @rachel_user.delete 
+      @mark_user.delete
+    end
+
   end
 end

@@ -1,6 +1,5 @@
-<h5>New Owner</h5>
-
-<%= render 'form', owner: @owner %>
-
-<p>&nbsp;</p>
-<%= link_to 'Back', owners_path %>
+<%= render partial: "partials/form2_structure", locals: {object: @owner, 
+                                                        type_of_form: "New Owner",
+                                                        fields1: "owner_fields",
+                                                        section_2: "User Account",
+                                                        fields2: "user_fields"} %>

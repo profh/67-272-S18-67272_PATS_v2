@@ -41,12 +41,17 @@ class ProceduresController < ApplicationController
   end
   
   def destroy
-    @procedure.destroy
-    flash[:notice] = "Successfully removed #{@procedure.name}."
-    redirect_to procedures_url
+    if @procedure.destroy
+      flash[:notice] = "Successfully removed #{@procedure.name}."
+      redirect_to procedures_url
+    else
+      @prices = @procedure.procedure_costs.chronological
+      render action: 'show'
+    end
+    
   end
 
-    private
+  private
     def set_procedure
       @procedure = Procedure.find(params[:id])
     end

@@ -1,6 +1,3 @@
-<h5>New Procedure</h5>
-
-<%= render 'form', procedure: @procedure %>
-
-<p>&nbsp;</p>
-<%= link_to 'Back', procedures_path %>
+<%= render partial: "partials/form_structure", locals: {object: @procedure, 
+                                                        type_of_form: "New Procedure",
+                                                        fields: "fields"} %>

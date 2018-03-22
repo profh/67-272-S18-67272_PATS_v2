@@ -41,9 +41,13 @@ class MedicinesController < ApplicationController
   end
   
   def destroy
-    @medicine.destroy
-    flash[:notice] = "Successfully removed #{@medicine.name}."
-    redirect_to medicines_url
+    if @medicine.destroy
+      flash[:notice] = "Successfully removed #{@medicine.name}."
+      redirect_to medicines_url
+    else
+      @prices = @medicine.medicine_costs.chronological
+      render action: 'show'
+    end
   end
 
     private

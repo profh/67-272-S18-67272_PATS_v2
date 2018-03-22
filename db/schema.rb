@@ -116,7 +116,7 @@ ActiveRecord::Schema.define(version: 20180320013952) do
     t.string "role"
     t.string "username"
     t.string "password_digest"
-    t.boolean "active"
+    t.boolean "active", default: true
   end
 
   create_table "visits", force: :cascade do |t|

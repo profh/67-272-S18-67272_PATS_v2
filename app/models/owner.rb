@@ -1,8 +1,10 @@
 class Owner < ApplicationRecord
-  
-  # create a callback that will strip non-digits before saving to db
-  before_save :reformat_phone
-  
+  include AppHelpers::Deletions
+  include AppHelpers::Activeable::InstanceMethods
+  extend AppHelpers::Activeable::ClassMethods
+
+  attr_accessor :username, :password, :password_confirmation
+    
   # Relationships
   # -----------------------------
   has_many :pets # :dependent => :destroy  (:nullify option will break link, but leaves orphan records)
@@ -13,12 +15,9 @@ class Owner < ApplicationRecord
   
   # Scopes
   # -----------------------------
+  # scopes for activeable already added in...
   # list owners in alphabetical order
   scope :alphabetical, -> { order('last_name, first_name') }
-  # get all the owners who are active (not moved out and pet is alive)
-  scope :active, -> { where(active: true) }
-  # get all the owners who are inactive (have moved out or pet is dead)
-  scope :inactive, -> { where.not(active: true) }
   # search for all the owners in the system by either first or last name
   scope :search, ->(term) { where('first_name LIKE ? OR last_name LIKE ?', "#{term}%", "#{term}%") }
 
@@ -59,14 +58,41 @@ class Owner < ApplicationRecord
   def proper_name
     first_name + " " + last_name
   end
+
+  # Delegates
+  delegate :username, to: :user, allow_nil: true
   
+  # Callbacks
+  # create a callback that will strip non-digits before saving to db
+  before_save :reformat_phone
+
+  # don't allow any owners to be destroyed
+  before_destroy do 
+    cannot_destroy_object()
+  end
+
+  # convert destroy call to make inactive
+  after_rollback :deactive_owner_user_and_pets
+
+  # a final callback to reactivate user account if owner is made active
+  before_update do
+    if self.active && !self.user.active
+      self.user.make_active
+    end
+  end
   
-  # Callback code
    private
      # We need to strip non-digits before saving to db
      def reformat_phone
        phone = self.phone.to_s  # change to string in case input as all numbers 
        phone.gsub!(/[^0-9]/,"") # strip all non-digits
        self.phone = phone       # reset self.phone to new string
+     end
+
+     def deactive_owner_user_and_pets
+       self.pets.each{ |pet| pet.make_inactive }
+       self.user.make_inactive
+       self.make_inactive
+       errors.add(:base, "#{self.proper_name} could not be deleted but was made inactive instead, along with related pets and user account.")
      end
 end

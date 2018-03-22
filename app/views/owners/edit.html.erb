@@ -1,6 +1,5 @@
-<h5>Editing Owner</h5>
-
-<%= render 'form', owner: @owner %>
-
-<%= link_to 'Show', @owner %> |
-<%= link_to 'Back', owners_path %>
+<%= render partial: "partials/form2_structure", locals: {object: @owner, 
+                                                        type_of_form: "Edit Owner",
+                                                        fields1: "owner_fields",
+                                                        section_2: "User Account",
+                                                        fields2: "user_fields"} %>

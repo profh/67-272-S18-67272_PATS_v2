@@ -1,4 +1,6 @@
 class Medicine < ApplicationRecord
+  include AppHelpers::Activeable::InstanceMethods
+  extend AppHelpers::Activeable::ClassMethods
   
   # Relationships
   has_many :animal_medicines
@@ -9,7 +11,6 @@ class Medicine < ApplicationRecord
 
   # Scopes
   scope :alphabetical, -> { order('name') }
-  scope :active,       -> { where(active: true) }
   scope :depleted,     -> { where('stock_amount < ?', 100) }
   scope :vaccines,     -> { where(vaccine: true) }
   scope :nonvaccines,  -> { where(vaccine: false) }
@@ -20,7 +21,6 @@ class Medicine < ApplicationRecord
   validates_numericality_of :stock_amount, :only_integer => true, :greater_than_or_equal_to => 0
   
   # Other methods
-  # attr_accessor :destroyable
 
   def is_vaccine?
     vaccine
@@ -33,18 +33,41 @@ class Medicine < ApplicationRecord
   end
 
   # Callbacks
-  # before_destroy :is_destroyable?
-  # after_rollback :convert_to_inactive
+  before_destroy do 
+   check_if_ever_given_as_dosage
+   @destroyable = false if errors.present?
+   throw(:abort) if errors.present?
+   remove_associated_animal_medicines
+   remove_associated_medicine_costs
+  end
+
+  after_rollback :convert_to_inactive
+
+  private
+  def check_if_ever_given_as_dosage
+    unless no_dosages?
+      errors.add(:base, "Medicine cannot be deleted because previously used during visits, but its status has been set to inactive.")
+    end
+  end
+
+  def no_dosages?
+    self.dosages.empty?
+  end
+
+  def remove_associated_animal_medicines
+    self.animal_medicines.each{ |am| am.destroy }
+  end
+
+  def remove_associated_medicine_costs
+    self.medicine_costs.each{ |mc| mc.destroy }
+  end
 
   # private
-  # def is_destroyable?
-  #   @destroyable = self.dosages.empty?
-  # end
 
-  # def convert_to_inactive
-  #   if !destroyable.nil? && destroyable == false
-  #     self.update_attribute(:active, false)
-  #   end
-  #   @destroyable = nil
-  # end
+  def convert_to_inactive
+    if !@destroyable.nil? && @destroyable == false
+      self.update_attribute(:active, false)
+    end
+    @destroyable = nil
+  end
 end

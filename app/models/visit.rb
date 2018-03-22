@@ -1,4 +1,6 @@
 class Visit < ApplicationRecord
+  include AppHelpers::Deletions
+
   # Relationships
   # -----------------------------
   belongs_to :pet
@@ -29,5 +31,8 @@ class Visit < ApplicationRecord
 
   # weight must be present and a number greater than 0 and less than 100 (none of our animal types will exceed)
   validates :weight, presence: true, numericality: { greater_than: 0, less_than: 100 }
+
+  # Callback - to prevent deletions
+  before_destroy :cannot_destroy_object
 
 end

@@ -1,6 +1,3 @@
-<h5>New Visit</h5>
-
-<%= render 'form', visit: @visit %>
-
-<p>&nbsp;</p>
-<%= link_to 'Back', visits_path %>
+<%= render partial: "partials/form_structure", locals: {object: @visit, 
+                                                        type_of_form: "New Visit",
+                                                        fields: "fields"} %>

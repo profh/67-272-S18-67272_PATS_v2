@@ -73,14 +73,23 @@ class MedicineTest < ActiveSupport::TestCase
     #   assert_nil Medicine.ftsearch("")
     # end
 
-    should "show that an medicine that has been used cannot be destroyed" do
+    should "show that a medicine that has been used cannot be destroyed but made inactive" do
+      # add additional contexts
       create_animals
       create_owners
       create_pets
       create_visits
       create_animal_medicines
       create_dosages
-      # deny @rabies.destroy
+      # assert conditions prior to test
+      assert @rabies.active
+      deny @rabies.dosages.empty?
+      # test the before_destroy callback
+      deny @rabies.destroy
+      @rabies.reload
+      # test the after_rollback callback
+      deny @rabies.active
+      # remove additional contexts
       destroy_dosages
       destroy_animal_medicines
       destroy_visits

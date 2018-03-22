@@ -12,6 +12,9 @@
     <b>Email:&nbsp;&nbsp;</b><br>
       <%= mail_to @owner.email, @owner.email, encode: "javascript" %><br /><br />
 
+    <b>Username:&nbsp;&nbsp;</b><br>
+      <%= @owner.user.active ? @owner.username : "n/a" %><br /><br />
+
     <b>Active with PATS?&nbsp;&nbsp;</b>
       <%= @owner.active ? "Yes" : "No" %>
   </div>

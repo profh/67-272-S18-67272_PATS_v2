@@ -1,4 +1,6 @@
 class MedicineCost < ApplicationRecord
+  include AppHelpers::Deletions
+
   # Relationships
   belongs_to :medicine
 
@@ -14,6 +16,10 @@ class MedicineCost < ApplicationRecord
 
   # Callback (to handle in sqlite what we would have done in a postrges trigger)
   before_create :set_end_date_of_old_cost
+
+  before_destroy do 
+    cannot_destroy_object()
+  end
 
   private
   def set_end_date_of_old_cost

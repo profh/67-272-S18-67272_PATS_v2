@@ -1,6 +1,3 @@
-<h5>New Pet</h5>
-
-<%= render 'form', pet: @pet %>
-
-<p>&nbsp;</p>
-<%= link_to 'Back', pets_path %>
+<%= render partial: "partials/form_structure", locals: {object: @pet, 
+                                                        type_of_form: "New Pet",
+                                                        fields: "fields"} %>

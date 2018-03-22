@@ -20,16 +20,24 @@ class OwnersController < ApplicationController
   end
 
   def edit
+    # @owner.username = @owner.username
   end
 
   def create
     @owner = Owner.new(owner_params)
-    if @owner.save
-      # if saved to database
-      flash[:notice] = "Successfully created #{@owner.proper_name}."
-      redirect_to owner_path(@owner) # go to show owner page
+    @user = User.new(user_params)
+    @user.role = "owner"
+    if @user.save
+      @owner.user_id = @user.id
+      if @owner.save
+        # if saved to database
+        flash[:notice] = "Successfully created #{@owner.proper_name}."
+        redirect_to owner_path(@owner) # go to show owner page
+      else
+        # return to the 'new' form
+        render action: 'new'
+      end
     else
-      # return to the 'new' form
       render action: 'new'
     end
   end
@@ -44,19 +52,25 @@ class OwnersController < ApplicationController
   end
 
   def destroy
-    @owner.destroy
-    flash[:notice] = "Successfully removed #{@owner.proper_name} from the PATS system."
-    redirect_to owners_url
+    if @owner.destroy
+      redirect_to owners_url, notice: "Successfully removed #{@owner.proper_name} from the PATS system."
+    else
+      @current_pets = @owner.pets.alphabetical.active.to_a
+      render action: 'show'
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_owner
       @owner = Owner.find(params[:id])
     end
-    # Never trust parameters from the scary internet, only allow the white list through.
+
     def owner_params
-      params.require(:owner).permit(:first_name, :last_name, :street, :city, :state, :zip, :phone, :email, :active)
+      params.require(:owner).permit(:first_name, :last_name, :street, :city, :state, :zip, :phone, :email, :active, :username, :password, :password_confirmation)
+    end
+
+    def user_params
+      params.require(:owner).permit(:first_name, :last_name, :active, :username, :password, :password_confirmation)
     end
 
 end
