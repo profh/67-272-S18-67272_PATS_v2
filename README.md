@@ -1,7 +1,7 @@
-67272_PATS_v1_sqlite
+67272_PATS_v2
 ==
 
-This is a basic Rails app that was built as a class demonstration in the spring of 2018.  This first version of the project is designed help students become more familiar with the basics of the Rails 5.1 framework; future versions will add in additional features like searching (straight|phonetic|full-text), polymorphic associations, and interactive javascript interfaces.
+This is a basic Rails app that was built as a class demonstration in the spring of 2018.  This version of the project is designed help students become more familiar with authentication, authorization, callbacks and rollbacks as well as build on some of the refactoring concepts reviewed at the end of the first version.
 
 The class is Application Design & Development (67-272) and is for students in [Information Systems at Carnegie Mellon University](https://67272.cmuis.net). We have posted this code on [github.com](https://github.com/profh) in a public directory so that (a) it is readily accessible to students and (b) that students will get a little familiarity with github.com.
 
@@ -24,4 +24,9 @@ If you want to load the testing context into the development database, you can d
 1. type `require './test/contexts'` (it will say 'true')
 1. type `include Contexts` (it will say 'Object')
 1. type in whatever context building method you wish (e.g., `create_animals`)
+
+or...
+
+you could just run `rake db:contexts` and let that script do it for you. ;)
+
 
