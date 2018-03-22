@@ -20,7 +20,6 @@ class OwnersController < ApplicationController
   end
 
   def edit
-    # @owner.username = @owner.username
   end
 
   def create
