@@ -68,6 +68,7 @@ class Pet < ApplicationRecord
   end
   
   # after_rollback do
+  #   return true unless self.destroyable == false
   #   self.make_inactive
   #   # problem is no error msg given to user
   # end

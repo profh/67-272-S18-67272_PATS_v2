@@ -11,7 +11,7 @@ module AppHelpers
       errors.add(:base, msg)
       throw(:abort) if errors.present?
       # self.make_inactive if self.respond_to?(:active)
-      # if respond_to? :active, why not make_inactive as well?                      (hint: transactions)
+      # if respond_to? :active, why not make_inactive as well?            (hint: transactions)
     end
   end
 end
